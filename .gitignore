@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+.cache/
+coverage/
+
+# local env & secrets
+.env
+.env*.local
+
+# uploaded files (use a Railway volume in production)
+uploads/
+
+next-env.d.ts
+*.tsbuildinfo
+*.log
+.DS_Store
