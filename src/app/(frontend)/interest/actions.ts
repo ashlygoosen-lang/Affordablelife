@@ -2,7 +2,8 @@
 
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { createResumeToken } from '@/lib/application-tokens'
+import { createResumeToken, hashResumeToken } from '@/lib/application-tokens'
+import { getPaymentSettings } from '@/lib/billing'
 import { appAuth } from '@/lib/app-auth'
 
 export type InterestFormState = {
@@ -12,6 +13,7 @@ export type InterestFormState = {
   interestId?: string
   applicationId?: string
   resumeToken?: string
+  reservation?: { url: string; amount: number; terms?: string | null }
 }
 
 const tiers = new Set([
@@ -134,9 +136,51 @@ export async function registerInterest(
       console.error('[interest] draft application could not be created', error)
       // Interest registration remains valid; Stage 2 can create the draft on its first save.
     }
+    let reservation: InterestFormState['reservation']
+    const settings = await getPaymentSettings(payload)
+    if (settings?.reservationDepositsEnabled && Number(settings.reservationDepositAmount) > 0) {
+      try {
+        const payToken = createResumeToken()
+        const amount = Number(settings.reservationDepositAmount)
+        const invoice = await payload.create({
+          collection: 'invoices',
+          overrideAccess: true,
+          context: { payToken },
+          data: {
+            kind: 'reservation-deposit',
+            amount,
+            description: `Refundable reservation deposit — ${tier === 'business-office' ? 'office request' : 'room'} interest`,
+            dueDate: new Date(Date.now() + 7 * 86_400_000).toISOString(),
+            payerName: contactName,
+            payerEmail: email,
+            tenant: user?.id,
+            interest: interest.id,
+            application: applicationId,
+            payTokenHash: hashResumeToken(payToken),
+            status: 'issued',
+          },
+        })
+        await payload.update({
+          collection: 'demand-interests',
+          id: interest.id,
+          overrideAccess: true,
+          data: { reservationDepositStatus: 'invited' },
+        })
+        reservation = {
+          url: `/pay/${invoice.id}?t=${encodeURIComponent(payToken)}`,
+          amount,
+          terms: settings.reservationTerms,
+        }
+      } catch (error) {
+        console.error('[interest] reservation invoice could not be created', error)
+      }
+    }
     return {
       success: true,
-      message: 'Your interest is registered. No payment or reservation deposit has been taken.',
+      reservation,
+      message: reservation
+        ? 'Your interest is registered.'
+        : 'Your interest is registered. No payment or reservation deposit has been taken.',
       interestId: String(interest.id),
       applicationId,
       resumeToken: applicationId ? resumeToken : undefined,

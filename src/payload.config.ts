@@ -16,6 +16,13 @@ import { DemandInterests } from './collections/DemandInterests'
 import { ApplicationDocuments } from './collections/ApplicationDocuments'
 import { TenantApplications } from './collections/TenantApplications'
 import { Users } from './collections/Users'
+import { Tenancies } from './collections/Tenancies'
+import { Invoices } from './collections/Invoices'
+import { Payments } from './collections/Payments'
+import { MaintenanceRequests } from './collections/MaintenanceRequests'
+import { Payouts } from './collections/Payouts'
+import { PaymentSettings } from './globals/PaymentSettings'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { migrations } from './migrations'
 import { bootstrap } from './seed/bootstrap'
 import { siteURL } from './lib/site-url'
@@ -51,7 +58,25 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      afterNavLinks: ['/components/admin/ops-link#OpsLink'],
+    },
   },
+  // Outgoing email (invoices, receipts, password resets) once SMTP is configured.
+  ...(process.env.SMTP_HOST
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: process.env.SMTP_FROM || 'hello@affordablelife.co.za',
+          defaultFromName: 'Affordable Life',
+          transportOptions: {
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT || 587),
+            secure: process.env.SMTP_PORT === '465',
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+          },
+        }),
+      }
+    : {}),
   i18n: {
     fallbackLanguage: 'en',
     supportedLanguages: { en: adminLanguage },
@@ -68,7 +93,13 @@ export default buildConfig({
     TenantApplications,
     ApplicationDocuments,
     PropertySubmissions,
+    Tenancies,
+    Invoices,
+    Payments,
+    MaintenanceRequests,
+    Payouts,
   ],
+  globals: [PaymentSettings],
   editor: lexicalEditor(),
   db: postgresAdapter({
     idType: 'uuid',

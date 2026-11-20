@@ -9,6 +9,9 @@ import { submitWithoutReset } from '@/lib/submit-without-reset'
 type SuburbOption = { id: string; slug: string; name: string; city: string; visible: boolean }
 type HomeOption = { id: string; slug: string; title: string; suburbSlug: string }
 
+const formatAmount = (value: number) =>
+  new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(value)
+
 const initialState: InterestFormState = { success: false, message: '' }
 
 const cityLabels: Record<string, string> = {
@@ -60,9 +63,10 @@ export function InterestForm({ suburbs, homes }: { suburbs: SuburbOption[]; home
           }),
         )
       }
-      router.push(`/apply?interest=${encodeURIComponent(state.interestId)}`)
+      // With a reservation deposit on offer, let the visitor choose what to do next.
+      if (!state.reservation) router.push(`/apply?interest=${encodeURIComponent(state.interestId)}`)
     }
-  }, [router, state.applicationId, state.interestId, state.resumeToken, state.success])
+  }, [router, state.applicationId, state.interestId, state.reservation, state.resumeToken, state.success])
 
   if (state.success) {
     return (
@@ -70,15 +74,28 @@ export function InterestForm({ suburbs, homes }: { suburbs: SuburbOption[]; home
         <CheckCircle2 className="mx-auto text-[#2E6F5E]" size={52} />
         <h2 className="mt-5 font-serif text-3xl font-semibold">Interest registered.</h2>
         <p className="mt-3 leading-7 text-[#5F6D74]">
-          {state.message} Opening your full application…
+          {state.message} {state.reservation ? '' : 'Opening your full application…'}
         </p>
+        {state.reservation && (
+          <div className="mt-6 rounded-2xl bg-[#F6F1E9] p-5 text-left">
+            <p className="font-serif text-xl text-[#0E2A3B]">
+              Hold your place with a {formatAmount(state.reservation.amount)} reservation deposit
+            </p>
+            {state.reservation.terms && (
+              <p className="mt-2 text-sm leading-6 text-[#5F6D74]">{state.reservation.terms}</p>
+            )}
+            <a className="primary-button mt-4 w-full" href={state.reservation.url}>
+              Pay reservation deposit
+            </a>
+          </div>
+        )}
         <a
-          className="primary-button mt-6"
+          className={`${state.reservation ? 'secondary-button' : 'primary-button'} mt-4 w-full`}
           href={
             state.interestId ? `/apply?interest=${encodeURIComponent(state.interestId)}` : '/apply'
           }
         >
-          Continue application
+          {state.reservation ? 'Continue to full application' : 'Continue application'}
         </a>
       </div>
     )

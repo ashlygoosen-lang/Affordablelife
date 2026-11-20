@@ -5,6 +5,7 @@ import { ArrowRight, Building2, FileClock, FilePlus2 } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import { appAuth } from '@/lib/app-auth'
+import { AccountShell } from '@/components/account-shell'
 
 export const metadata: Metadata = { title: 'My applications' }
 
@@ -36,16 +37,18 @@ export default async function ApplicationsPage() {
   })
 
   return (
-    <>
-      <section className="bg-[#0E2A3B] py-14 text-white">
-        <div className="page-container">
-          <p className="eyebrow-light">Member account</p>
-          <h1 className="font-serif text-4xl font-semibold sm:text-6xl">My applications</h1>
-          <p className="mt-4 text-white/65">Drafts and submitted files linked to {user.email}.</p>
-        </div>
-      </section>
-      <section className="page-section">
-        <div className="page-container">
+    <AccountShell
+      user={user}
+      active="/account/interests"
+      title="Applications"
+      subtitle={`Drafts and submitted applications linked to ${user.email}.`}
+      actions={
+        <Link className="primary-button !min-h-11" href="/interest">
+          <FilePlus2 size={17} /> New application
+        </Link>
+      }
+    >
+      <div>
           {applications.docs.length ? (
             <div className="grid gap-4">
               {applications.docs.map((application) => (
@@ -101,8 +104,7 @@ export default async function ApplicationsPage() {
               </Link>
             </div>
           )}
-        </div>
-      </section>
-    </>
+      </div>
+    </AccountShell>
   )
 }

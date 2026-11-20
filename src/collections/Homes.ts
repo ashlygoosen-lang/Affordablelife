@@ -82,6 +82,17 @@ export const Homes: CollectionConfig = {
     { name: 'verifiedAddress', type: 'checkbox', defaultValue: false },
     { name: 'photosChecked', type: 'checkbox', defaultValue: false },
     {
+      name: 'partner',
+      type: 'relationship',
+      relationTo: 'users',
+      index: true,
+      filterOptions: { role: { equals: 'partner' } },
+      admin: {
+        position: 'sidebar',
+        description: 'Property partner (landlord) who sees this home in the partner portal.',
+      },
+    },
+    {
       name: 'status',
       type: 'select',
       required: true,

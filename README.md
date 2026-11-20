@@ -29,6 +29,17 @@ PostgreSQL database, Tailwind CSS v4.
 - Member accounts: register, log in, profile, "My applications", continue drafts
 - Property partners can submit a property for verification
 - Admin panel (`/admin`) for homes, suburbs, demand, applications, documents, partner submissions
+- **Tenant dashboard** (`/account`): next payment, tenancy, invoices with online payment and receipts,
+  maintenance requests with live status, applications and profile
+- **Partner portal** (`/partner`): occupancy, rent collected, maintenance (update status and leave notes
+  for tenants) and payout statements for each landlord's homes
+- **Operations dashboard** (`/ops`, staff only): collections chart, outstanding and overdue invoices,
+  record EFT payments, application pipeline, demand by suburb, open maintenance, tenancies needing setup
+- **Billing**: approving an application opens a tenancy; setting its rent issues the deposit and
+  first-month invoices; monthly rent and office invoices are issued automatically; overdue invoices
+  are flagged; an optional reservation deposit can be switched on in Admin → Payment settings
+- **PayFast payments**: signed checkout, verified payment notifications (signature, source, amount and
+  PayFast confirmation), automatic receipts, and secure pay links for people without an account
 - Private data is locked down: applications, documents, demand and submissions are admin-only;
   ID numbers and revenue are admin-read-only; workflow status can only be changed by staff
 
@@ -58,6 +69,24 @@ PostgreSQL database, Tailwind CSS v4.
 
    Railway waits for `/api/health` before switching traffic, so the site goes live only once
    the database is ready.
+
+### Going live with PayFast
+
+Until you add PayFast credentials, payments run against the PayFast **sandbox** (the pay page shows a
+"Test mode" note and no money moves). To take real payments, add these variables in Railway:
+`PAYFAST_MODE=live`, `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY` and `PAYFAST_PASSPHRASE`
+(the passphrase must match the one set in your PayFast dashboard). PayFast notifies
+`https://<your-domain>/api/payfast/notify` automatically for every payment.
+
+### Staff workflow
+
+1. Review applications in **Admin → Applications**; set status to **Approved**.
+2. A tenancy is created. For rooms the rent comes from the home; for offices, open the tenancy and set
+   the monthly rent. Link the tenant's member account if they applied without one.
+3. The tenant is invoiced for deposit and first month and pays online. Their tenancy becomes active.
+4. Monthly invoices follow automatically. Record EFT payments from `/ops`.
+5. To give a landlord the partner portal, set their account's **Role** to *Property partner* and choose
+   them as **Partner** on their homes.
 
 Custom domain: add it under Networking, then set `SITE_URL=https://yourdomain.co.za` and redeploy.
 

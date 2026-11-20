@@ -3,6 +3,8 @@ import { Suspense } from 'react'
 import { InterestForm } from '@/components/interest-form'
 import { PageHero } from '@/components/marketing-pages'
 import { getAllSuburbs, getVerifiedHomes } from '@/lib/listings'
+import { getPaymentSettings } from '@/lib/billing'
+import { getPayloadClient } from '@/lib/payload'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +14,12 @@ export const metadata: Metadata = {
 }
 
 export default async function InterestPage() {
-  const [suburbs, homes] = await Promise.all([getAllSuburbs(), getVerifiedHomes()])
+  const [suburbs, homes, settings] = await Promise.all([
+    getAllSuburbs(),
+    getVerifiedHomes(),
+    getPayloadClient().then(getPaymentSettings),
+  ])
+  const depositsOn = Boolean(settings?.reservationDepositsEnabled)
   const suburbOptions = suburbs.map((suburb) => ({
     id: String(suburb.id),
     slug: suburb.slug,
@@ -59,11 +66,17 @@ export default async function InterestPage() {
               </p>
             </div>
             <div className="mt-8 rounded-2xl border border-[#C6A15B]/40 bg-[#F6F1E9] p-5 text-sm leading-6 text-[#5F6D74]">
-              <strong className="block text-[#0E2A3B]">
-                Reservation deposits are not enabled yet.
-              </strong>
-              Deposit, refund and trust-account terms require legal confirmation before any payment
-              is collected.
+              {depositsOn ? (
+                <>
+                  <strong className="block text-[#0E2A3B]">Optional reservation deposit.</strong>
+                  {settings?.reservationTerms}
+                </>
+              ) : (
+                <>
+                  <strong className="block text-[#0E2A3B]">No payment to register interest.</strong>
+                  Deposits and rent are only invoiced once your group or office offer is confirmed.
+                </>
+              )}
             </div>
           </div>
           <Suspense

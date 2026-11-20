@@ -83,6 +83,7 @@ export async function registerUser(
         email,
         phone: phone || undefined,
         password,
+        role: 'tenant',
         accountType: accountType as 'personal' | 'business' | 'corporate',
       },
     })

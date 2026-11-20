@@ -21,9 +21,16 @@
     scroll-behavior: smooth;
   }
   body {
-    background: #fbfaf7;
+    background: #faf9f6;
     color: #14202b;
     font-family: var(--font-inter), sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: #e4c27e;
+    color: #0e2a3b;
   }
   :root[data-theme='dark'] body {
     background: #0b1e29;
@@ -73,23 +80,23 @@
   margin-inline: auto;
 }
 .page-section {
-  padding-block: clamp(4.5rem, 9vw, 7rem);
+  padding-block: clamp(5rem, 10vw, 8rem);
 }
 .display-title {
   font-family: var(--font-fraunces), serif;
-  font-size: clamp(3rem, 6vw, 4.7rem);
-  font-weight: 500;
-  line-height: 1.02;
-  letter-spacing: -0.04em;
+  font-size: clamp(3rem, 6.2vw, 5rem);
+  font-weight: 350;
+  line-height: 1;
+  letter-spacing: -0.045em;
   color: #0e2a3b;
   text-wrap: balance;
 }
 .section-title {
   font-family: var(--font-fraunces), serif;
-  font-size: clamp(2.3rem, 4vw, 3.4rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.3rem, 4.2vw, 3.5rem);
+  font-weight: 380;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
   color: #0e2a3b;
   text-wrap: balance;
 }
@@ -99,21 +106,20 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
   color: #2e6f5e;
 }
 .eyebrow::before,
 .eyebrow-light::before {
   content: '';
   height: 1px;
-  width: 28px;
-  background: #c6a15b;
+  width: 32px;
+  background: #b8914a;
 }
 .eyebrow-light {
-  color: #e5c079;
+  color: #e4c27e;
 }
 .section-heading {
   max-width: 670px;
@@ -132,9 +138,10 @@
   justify-content: center;
   gap: 0.6rem;
   border-radius: 999px;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.82rem;
-  font-weight: 800;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.86rem;
+  font-weight: 650;
+  letter-spacing: 0.005em;
   transition:
     transform 0.2s,
     background 0.2s,
@@ -145,7 +152,7 @@
   border: 1px solid #c2502a;
   background: #c2502a;
   color: #fff;
-  box-shadow: 0 10px 24px rgba(194, 80, 42, 0.2);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 12px 28px -12px rgba(194, 80, 42, 0.55);
 }
 .primary-button:hover {
   background: #a63e1d;
@@ -188,11 +195,9 @@
   gap: 0.25rem;
   border-right: 1px solid #e3e8e9;
   padding: 0.35rem 1rem;
-  color: #657179;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: #5f6d74;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 .search-field input {
   border: 0;
@@ -205,16 +210,17 @@
   text-transform: none;
 }
 .feature-card {
-  border-radius: 20px;
+  border: 1px solid #e6e9e6;
+  border-radius: 22px;
   background: #fff;
   padding: 2rem;
-  box-shadow: 0 8px 26px rgba(14, 42, 59, 0.07);
 }
 .feature-card h3 {
   margin-top: 1.2rem;
   font-family: var(--font-fraunces), serif;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.55rem;
+  font-weight: 450;
+  letter-spacing: -0.015em;
   color: #0e2a3b;
 }
 .feature-card > p {
@@ -226,10 +232,10 @@
   min-height: 270px;
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
+  border: 1px solid #e6e9e6;
+  border-radius: 22px;
   background: white;
   padding: 2rem;
-  box-shadow: 0 8px 26px rgba(14, 42, 59, 0.06);
   transition:
     transform 0.2s,
     background 0.2s,
@@ -241,8 +247,9 @@
 .audience-tile h3 {
   margin-top: auto;
   font-family: var(--font-fraunces), serif;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.85rem;
+  font-weight: 420;
+  letter-spacing: -0.02em;
 }
 .audience-tile p {
   margin-top: 0.5rem;
@@ -543,5 +550,30 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* Receipt reveal on the home page hero: one orchestrated entrance. */
+@keyframes receipt-line {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.receipt-line {
+  animation: receipt-line 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

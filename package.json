@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "4.0.0-beta.8",
+    "@payloadcms/email-nodemailer": "4.0.0-beta.8",
     "@payloadcms/next": "4.0.0-beta.8",
     "@payloadcms/richtext-lexical": "4.0.0-beta.8",
     "@payloadcms/transformer-sharp": "4.0.0-beta.8",

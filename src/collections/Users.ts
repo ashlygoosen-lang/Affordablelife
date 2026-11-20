@@ -18,6 +18,7 @@ export const Users: CollectionConfig = {
   admin: {
     group: 'Accounts',
     useAsTitle: 'email',
+    defaultColumns: ['email', 'name', 'role', 'accountType', 'createdAt'],
   },
   access: {
     create: () => true,
@@ -39,6 +40,23 @@ export const Users: CollectionConfig = {
         { label: 'Corporate', value: 'corporate' },
       ],
     },
+    {
+      name: 'role',
+      type: 'select',
+      required: true,
+      defaultValue: 'tenant',
+      index: true,
+      options: [
+        { label: 'Tenant / applicant', value: 'tenant' },
+        { label: 'Property partner', value: 'partner' },
+      ],
+      access: { create: adminFieldAccess, update: adminFieldAccess },
+      admin: {
+        position: 'sidebar',
+        description: 'Property partners get the partner portal for homes linked to them.',
+      },
+    },
+    { name: 'companyName', type: 'text', maxLength: 160 },
     {
       name: 'status',
       type: 'select',

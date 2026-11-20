@@ -48,22 +48,22 @@ export function ListingCard({
 }) {
   const total = home.roomPrice + home.includedCosts
   return (
-    <article className="group overflow-hidden rounded-[20px] bg-white shadow-[0_8px_28px_rgba(14,42,59,.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(14,42,59,.13)]">
-      <Link className="relative block h-64 overflow-hidden" href={`/homes/${home.slug}`}>
+    <article className="group overflow-hidden rounded-[24px] border border-[#E6E9E6] bg-white transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(14,42,59,.35)]">
+      <Link className="relative block aspect-[4/3] overflow-hidden" href={`/homes/${home.slug}`}>
         <Image
-          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+          className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
           src={home.image.url}
           alt={home.image.alt}
           fill
           sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
           priority={priority}
         />
-        <span className="absolute left-4 top-4 rounded-full bg-[#0E2A3B]/90 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white">
+        <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[12px] font-semibold capitalize text-[#0E2A3B] backdrop-blur">
           {home.groupStatus.replace('-', ' ')}
         </span>
       </Link>
       <div className="p-5">
-        <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-[#6C777D]">
+        <div className="flex items-center justify-between text-[13px] text-[#6C777D]">
           <span className="flex items-center gap-1">
             <MapPin size={13} />
             {home.city}
@@ -75,7 +75,7 @@ export function ListingCard({
           )}
         </div>
         <Link href={`/homes/${home.slug}`}>
-          <h2 className="mt-2 font-serif text-2xl font-semibold text-[#0E2A3B]">{home.suburb}</h2>
+          <h2 className="mt-2 font-serif text-[1.65rem] font-normal tracking-[-0.02em] text-[#0E2A3B]">{home.suburb}</h2>
         </Link>
         <p className="mt-1 text-xs capitalize text-[#707A80]">
           {home.rooms}-bedroom {home.propertyType}

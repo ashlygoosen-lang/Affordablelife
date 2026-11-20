@@ -4,6 +4,7 @@ import { ShieldCheck } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { appAuth } from '@/lib/app-auth'
 import { ProfileForm } from '@/components/profile-form'
+import { AccountShell } from '@/components/account-shell'
 
 export const metadata: Metadata = { title: 'My profile' }
 
@@ -11,22 +12,15 @@ export default async function ProfilePage() {
   const user = await appAuth.currentUser()
   if (!user) redirect('/account?next=/account/home')
   return (
-    <>
-      <section className="bg-[#0E2A3B] py-14 text-white">
-        <div className="page-container">
-          <p className="eyebrow-light">Member account</p>
-          <h1 className="font-serif text-4xl font-semibold sm:text-6xl">My profile</h1>
-        </div>
-      </section>
-      <section className="page-section">
-        <div className="page-container grid gap-8 lg:grid-cols-[1fr_340px]">
+    <AccountShell user={user} active="/account/home" title="Profile" subtitle="Your contact details and account security.">
+        <div className="grid items-start gap-6 xl:grid-cols-[1fr_340px]">
           <ProfileForm
             name={user.name}
             email={user.email}
             phone={user.phone}
             accountType={user.accountType}
           />
-          <aside className="rounded-3xl bg-[#F5F1E9] p-7">
+          <aside className="rounded-[22px] border border-[#E2E6E4] bg-white p-7">
             <ShieldCheck className="text-[#2E6F5E]" />
             <h2 className="mt-4 font-serif text-2xl font-semibold text-[#0E2A3B]">
               Account security
@@ -43,7 +37,6 @@ export default async function ProfilePage() {
             </Link>
           </aside>
         </div>
-      </section>
-    </>
+    </AccountShell>
   )
 }

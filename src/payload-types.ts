@@ -168,6 +168,11 @@ export interface Config {
     'tenant-applications': TenantApplication;
     'application-documents': ApplicationDocument;
     'property-submissions': PropertySubmission;
+    tenancies: Tenancy;
+    invoices: Invoice;
+    payments: Payment;
+    'maintenance-requests': MaintenanceRequest;
+    payouts: Payout;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -191,6 +196,11 @@ export interface Config {
     'tenant-applications': TenantApplicationsSelect<false> | TenantApplicationsSelect<true>;
     'application-documents': ApplicationDocumentsSelect<false> | ApplicationDocumentsSelect<true>;
     'property-submissions': PropertySubmissionsSelect<false> | PropertySubmissionsSelect<true>;
+    tenancies: TenanciesSelect<false> | TenanciesSelect<true>;
+    invoices: InvoicesSelect<false> | InvoicesSelect<true>;
+    payments: PaymentsSelect<false> | PaymentsSelect<true>;
+    'maintenance-requests': MaintenanceRequestsSelect<false> | MaintenanceRequestsSelect<true>;
+    payouts: PayoutsSelect<false> | PayoutsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -201,8 +211,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | 'en' | 'en'[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'payment-settings': PaymentSetting;
+  };
+  globalsSelect: {
+    'payment-settings': PaymentSettingsSelect<false> | PaymentSettingsSelect<true>;
+  };
   locale: 'en';
   widgets: {
     welcome: WelcomeWidget;
@@ -309,6 +323,11 @@ export interface User {
   name: string;
   phone?: string | null;
   accountType: 'personal' | 'business' | 'corporate';
+  /**
+   * Property partners get the partner portal for homes linked to them.
+   */
+  role: 'tenant' | 'partner';
+  companyName?: string | null;
   status?: ('active' | 'suspended') | null;
   createdBy?:
     | ({
@@ -541,6 +560,10 @@ export interface Home {
   verifiedLandlord?: boolean | null;
   verifiedAddress?: boolean | null;
   photosChecked?: boolean | null;
+  /**
+   * Property partner (landlord) who sees this home in the partner portal.
+   */
+  partner?: (string | null) | User;
   status: 'pending' | 'verified' | 'hidden';
   createdBy?:
     | ({
@@ -862,6 +885,253 @@ export interface PropertySubmission {
   createdAt: string;
 }
 /**
+ * Created automatically when an application is approved. Setting a monthly rent issues the deposit and first-month invoices; monthly invoices then follow automatically.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenancies".
+ */
+export interface Tenancy {
+  id: string;
+  label?: string | null;
+  /**
+   * The member account that pays. Link it once the applicant has registered with the same email.
+   */
+  tenant?: (string | null) | User;
+  tenantName: string;
+  tenantEmail: string;
+  application?: (string | null) | TenantApplication;
+  kind: 'room' | 'office';
+  home?: (string | null) | Home;
+  /**
+   * e.g. Room 3 (en-suite)
+   */
+  roomLabel?: string | null;
+  officeDescription?: string | null;
+  startDate: string;
+  endDate?: string | null;
+  billingDay?: number | null;
+  /**
+   * Rand per month, all-inclusive
+   */
+  monthlyRent?: number | null;
+  /**
+   * Leave empty to use one month
+   */
+  depositAmount?: number | null;
+  status: 'pending-payment' | 'active' | 'notice' | 'ended' | 'cancelled';
+  initialInvoicesIssued?: boolean | null;
+  notes?: string | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Invoices are paid online through PayFast or marked paid here after an EFT.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoices".
+ */
+export interface Invoice {
+  id: string;
+  number?: string | null;
+  kind: 'reservation-deposit' | 'deposit' | 'first-month' | 'monthly-rent' | 'office-rent' | 'other';
+  /**
+   * Rand, incl. VAT where applicable
+   */
+  amount: number;
+  dueDate: string;
+  description: string;
+  /**
+   * Billing month, YYYY-MM
+   */
+  period?: string | null;
+  payerName: string;
+  payerEmail: string;
+  tenant?: (string | null) | User;
+  tenancy?: (string | null) | Tenancy;
+  application?: (string | null) | TenantApplication;
+  interest?: (string | null) | DemandInterest;
+  uniqueKey?: string | null;
+  payTokenHash?: string | null;
+  status: 'issued' | 'paid' | 'overdue' | 'cancelled' | 'refunded';
+  paidAt?: string | null;
+  paymentMethod?: ('payfast' | 'eft' | 'cash' | 'other') | null;
+  paymentReference?: string | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Recorded automatically from verified PayFast notifications (ITN).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: string;
+  invoice: string | Invoice;
+  provider: 'payfast' | 'manual';
+  providerPaymentId?: string | null;
+  amountGross?: number | null;
+  amountFee?: number | null;
+  amountNet?: number | null;
+  status: 'complete' | 'failed' | 'pending' | 'cancelled';
+  payerEmail?: string | null;
+  sandbox?: boolean | null;
+  receivedAt: string;
+  /**
+   * Notification fields received from PayFast
+   */
+  raw?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-requests".
+ */
+export interface MaintenanceRequest {
+  id: string;
+  title: string;
+  tenancy: string | Tenancy;
+  home?: (string | null) | Home;
+  reporter?: (string | null) | User;
+  category: 'plumbing' | 'electrical' | 'appliances' | 'internet' | 'security' | 'cleaning' | 'furniture' | 'other';
+  priority: 'low' | 'normal' | 'urgent';
+  description: string;
+  status: 'open' | 'in-progress' | 'scheduled' | 'resolved' | 'closed';
+  statusChangedAt?: string | null;
+  /**
+   * Visible to the tenant.
+   */
+  resolutionNote?: string | null;
+  staffNotes?: string | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Monthly payouts to property partners after the management fee.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payouts".
+ */
+export interface Payout {
+  id: string;
+  reference: string;
+  partner: string | User;
+  /**
+   * YYYY-MM
+   */
+  period: string;
+  grossCollected: number;
+  managementFee: number;
+  /**
+   * Net paid to partner
+   */
+  amount: number;
+  status: 'scheduled' | 'paid' | 'on-hold';
+  paidAt?: string | null;
+  note?: string | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -928,6 +1198,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'property-submissions';
         value: string | PropertySubmission;
+      } | null)
+    | ({
+        relationTo: 'tenancies';
+        value: string | Tenancy;
+      } | null)
+    | ({
+        relationTo: 'invoices';
+        value: string | Invoice;
+      } | null)
+    | ({
+        relationTo: 'payments';
+        value: string | Payment;
+      } | null)
+    | ({
+        relationTo: 'maintenance-requests';
+        value: string | MaintenanceRequest;
+      } | null)
+    | ({
+        relationTo: 'payouts';
+        value: string | Payout;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1049,6 +1339,8 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   phone?: T;
   accountType?: T;
+  role?: T;
+  companyName?: T;
   status?: T;
   createdBy?: T;
   updatedBy?: T;
@@ -1195,6 +1487,7 @@ export interface HomesSelect<T extends boolean = true> {
   verifiedLandlord?: T;
   verifiedAddress?: T;
   photosChecked?: T;
+  partner?: T;
   status?: T;
   createdBy?: T;
   updatedBy?: T;
@@ -1374,6 +1667,122 @@ export interface PropertySubmissionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenancies_select".
+ */
+export interface TenanciesSelect<T extends boolean = true> {
+  label?: T;
+  tenant?: T;
+  tenantName?: T;
+  tenantEmail?: T;
+  application?: T;
+  kind?: T;
+  home?: T;
+  roomLabel?: T;
+  officeDescription?: T;
+  startDate?: T;
+  endDate?: T;
+  billingDay?: T;
+  monthlyRent?: T;
+  depositAmount?: T;
+  status?: T;
+  initialInvoicesIssued?: T;
+  notes?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoices_select".
+ */
+export interface InvoicesSelect<T extends boolean = true> {
+  number?: T;
+  kind?: T;
+  amount?: T;
+  dueDate?: T;
+  description?: T;
+  period?: T;
+  payerName?: T;
+  payerEmail?: T;
+  tenant?: T;
+  tenancy?: T;
+  application?: T;
+  interest?: T;
+  uniqueKey?: T;
+  payTokenHash?: T;
+  status?: T;
+  paidAt?: T;
+  paymentMethod?: T;
+  paymentReference?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments_select".
+ */
+export interface PaymentsSelect<T extends boolean = true> {
+  invoice?: T;
+  provider?: T;
+  providerPaymentId?: T;
+  amountGross?: T;
+  amountFee?: T;
+  amountNet?: T;
+  status?: T;
+  payerEmail?: T;
+  sandbox?: T;
+  receivedAt?: T;
+  raw?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-requests_select".
+ */
+export interface MaintenanceRequestsSelect<T extends boolean = true> {
+  title?: T;
+  tenancy?: T;
+  home?: T;
+  reporter?: T;
+  category?: T;
+  priority?: T;
+  description?: T;
+  status?: T;
+  statusChangedAt?: T;
+  resolutionNote?: T;
+  staffNotes?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payouts_select".
+ */
+export interface PayoutsSelect<T extends boolean = true> {
+  reference?: T;
+  partner?: T;
+  period?: T;
+  grossCollected?: T;
+  managementFee?: T;
+  amount?: T;
+  status?: T;
+  paidAt?: T;
+  note?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1430,6 +1839,65 @@ export interface PayloadLlmInstructionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-settings".
+ */
+export interface PaymentSetting {
+  id: string;
+  /**
+   * Offer a refundable reservation deposit after someone registers interest. Switch on only once refund and trust-account terms have been confirmed.
+   */
+  reservationDepositsEnabled?: boolean | null;
+  reservationDepositAmount?: number | null;
+  reservationTerms?: string | null;
+  invoiceDueDays?: number | null;
+  /**
+   * Used for partner payout estimates.
+   */
+  managementFeePercent?: number | null;
+  /**
+   * Shown on invoices for tenants who prefer EFT.
+   */
+  eftDetails?: string | null;
+  createdBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedBy?:
+    | ({
+        relationTo: 'admins';
+        value: string | Admin;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null);
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-settings_select".
+ */
+export interface PaymentSettingsSelect<T extends boolean = true> {
+  reservationDepositsEnabled?: T;
+  reservationDepositAmount?: T;
+  reservationTerms?: T;
+  invoiceDueDays?: T;
+  managementFeePercent?: T;
+  eftDetails?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "welcome_widget".
  */
 export interface WelcomeWidget {
@@ -1466,7 +1934,12 @@ export interface CollectionQueryWidget {
       | 'demand-interests'
       | 'tenant-applications'
       | 'application-documents'
-      | 'property-submissions';
+      | 'property-submissions'
+      | 'tenancies'
+      | 'invoices'
+      | 'payments'
+      | 'maintenance-requests'
+      | 'payouts';
     where?:
       | {
           [k: string]: unknown;
@@ -1501,6 +1974,11 @@ export interface ActivityWidget {
           | 'tenant-applications'
           | 'application-documents'
           | 'property-submissions'
+          | 'tenancies'
+          | 'invoices'
+          | 'payments'
+          | 'maintenance-requests'
+          | 'payouts'
         )[]
       | null;
   };

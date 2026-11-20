@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 import sharp from 'sharp'
 import { homeSeeds, suburbSeeds } from './data'
+import { startBillingScheduler } from '../lib/billing'
 
 const LOCK_KEY = 4729113
 
@@ -17,6 +18,7 @@ type PgPool = {
  */
 export async function bootstrap(payload: Payload) {
   if (process.env.PAYLOAD_SKIP_BOOTSTRAP === 'true') return
+  startBillingScheduler(payload)
 
   const pool = (payload.db as unknown as { pool?: PgPool }).pool
   const client = pool ? await pool.connect().catch(() => null) : null

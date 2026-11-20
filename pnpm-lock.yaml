@@ -14,6 +14,9 @@ importers:
       '@payloadcms/db-postgres':
         specifier: 4.0.0-beta.8
         version: 4.0.0-beta.8(payload@4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3))
+      '@payloadcms/email-nodemailer':
+        specifier: 4.0.0-beta.8
+        version: 4.0.0-beta.8(payload@4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3))
       '@payloadcms/next':
         specifier: 4.0.0-beta.8
         version: 4.0.0-beta.8(@types/react@19.3.0)(graphql@16.15.0)(monaco-editor@0.57.0)(next@16.4.6(@types/node@24.12.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.77.4))(payload@4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
@@ -1148,6 +1151,12 @@ packages:
     peerDependencies:
       payload: 4.0.0-beta.8
 
+  '@payloadcms/email-nodemailer@4.0.0-beta.8':
+    resolution: {integrity: sha512-gVge5y/JgysnRkAyabbMt4XlPJcrDT8BgYHxKG9gP8mUJJ0tt0SpYQgO9Agv+a+k/rhQvpz1PGqhgU4cgnsEQQ==}
+    engines: {node: '>=24.22.1'}
+    peerDependencies:
+      payload: 4.0.0-beta.8
+
   '@payloadcms/graphql@4.0.0-beta.8':
     resolution: {integrity: sha512-7gdOLekjUJy2+AGD5VTd5uKpYf3F7nPrGnVmbGRH9BDQZ6gjByH1GiyVdvHr1qInuzHQySf+T5rnkLO6fnW5NQ==}
     hasBin: true
@@ -2126,6 +2135,10 @@ packages:
         optional: true
       sass:
         optional: true
+
+  nodemailer@10.6.0:
+    resolution: {integrity: sha512-jWanL7D9GD3jvUDYKmoC5rWTiG8MnBgnN2yV68bgMKip1zUJhiSTyz7Eg+18y8sk5OvdVDzws5nZK5arSI4f5Q==}
+    engines: {node: '>=20.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -3584,6 +3597,11 @@ snapshots:
       - sql.js
       - sqlite3
 
+  '@payloadcms/email-nodemailer@4.0.0-beta.8(payload@4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3))':
+    dependencies:
+      nodemailer: 10.6.0
+      payload: 4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3)
+
   '@payloadcms/graphql@4.0.0-beta.8(graphql@16.15.0)(payload@4.0.0-beta.8(graphql@16.15.0)(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       graphql: 16.15.0
@@ -4680,6 +4698,8 @@ snapshots:
       - '@babel/core'
       - '@types/node'
       - babel-plugin-macros
+
+  nodemailer@10.6.0: {}
 
   normalize-path@3.0.0: {}
 

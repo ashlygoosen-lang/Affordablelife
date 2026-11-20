@@ -8,6 +8,7 @@ import type {
   Where,
 } from 'payload'
 import type { ApplicationDocument } from '@/payload-types'
+import type { CollectionAfterChangeHook } from 'payload'
 import { APIError } from 'payload'
 
 type ApplicationAccessData = {
@@ -207,6 +208,50 @@ const hashDraftToken: CollectionBeforeValidateHook = ({ data, operation, req }) 
   return data
 }
 
+/** Approving an application opens a tenancy; a room's rent comes from the chosen home. */
+const openTenancyOnApproval: CollectionAfterChangeHook = async ({ doc, previousDoc, req }) => {
+  if (doc.status !== 'approved' || previousDoc?.status === 'approved') return doc
+  const existing = await req.payload.count({
+    collection: 'tenancies',
+    overrideAccess: true,
+    req,
+    where: { application: { equals: doc.id } },
+  })
+  if (existing.totalDocs > 0) return doc
+  const homeID = typeof doc.preferredHome === 'object' ? doc.preferredHome?.id : doc.preferredHome
+  let monthlyRent = 0
+  if (homeID && doc.applicationKind !== 'office') {
+    try {
+      const home = await req.payload.findByID({ collection: 'homes', id: homeID, depth: 0, overrideAccess: true, req })
+      monthlyRent = Number(home.roomPrice) + Number(home.includedCosts ?? 0)
+    } catch {
+      monthlyRent = 0
+    }
+  }
+  const owner = typeof doc.owner === 'object' ? doc.owner?.id : doc.owner
+  await req.payload.create({
+    collection: 'tenancies',
+    overrideAccess: true,
+    req,
+    data: {
+      tenant: owner || undefined,
+      tenantName: doc.applicantName,
+      tenantEmail: doc.applicantEmail,
+      application: doc.id,
+      kind: doc.applicationKind === 'office' ? 'office' : 'room',
+      home: homeID || undefined,
+      officeDescription:
+        doc.applicationKind === 'office'
+          ? `${doc.businessDetails?.companyName ?? 'Business'} · ${doc.businessDetails?.requiredSeats ?? 1} seats`
+          : undefined,
+      startDate: doc.moveInDate || new Date().toISOString(),
+      monthlyRent,
+      status: 'pending-payment',
+    },
+  })
+  return doc
+}
+
 export const TenantApplications: CollectionConfig = {
   slug: 'tenant-applications',
   admin: {
@@ -234,6 +279,7 @@ export const TenantApplications: CollectionConfig = {
   hooks: {
     beforeValidate: [hashDraftToken],
     beforeChange: [protectWorkflow],
+    afterChange: [openTenancyOnApproval],
   },
   fields: [
     {
