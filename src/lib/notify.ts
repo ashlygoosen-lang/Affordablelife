@@ -17,7 +17,7 @@ const layout = (title: string, body: string, cta?: { href: string; label: string
       ${body}
       ${cta ? `<p style="margin:28px 0 8px"><a href="${cta.href}" style="background:#c2502a;color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:bold;font-size:14px">${cta.label}</a></p>` : ''}
     </div>
-    <div style="padding:18px 28px;border-top:1px solid #eee;font-size:12px;color:#7a858a">Affordable Life (Pty) Ltd · Cape Town · hello@affordablelife.co.za</div>
+    <div style="padding:18px 28px;border-top:1px solid #eee;font-size:12px;color:#7a858a">Affordable Life, a division of VINK Group (Pty) Ltd (reg. 2018/079316/07) · Cape Town · hello@affordablelife.co.za</div>
   </div>
 </div>`
 

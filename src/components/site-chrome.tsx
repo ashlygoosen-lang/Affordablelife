@@ -271,8 +271,11 @@ export function Footer() {
         />
       </div>
       <div className="mx-auto mt-14 flex w-[min(1200px,calc(100%-32px))] flex-col justify-between gap-2 border-t border-white/10 py-5 text-[11px] text-white/40 sm:flex-row">
-        <span>© 2026 Affordable Life (Pty) Ltd.</span>
-        <span>Made in Cape Town for South Africa.</span>
+        <span>
+          © 2026 Affordable Life. All rights reserved. Affordable Life is a division of VINK
+          Group (Pty) Ltd, registration number 2018/079316/07.
+        </span>
+        <span className="shrink-0">Made in Cape Town for South Africa.</span>
       </div>
     </footer>
   )
