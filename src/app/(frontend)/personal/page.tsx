@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SplitText } from '@/components/split-text'
 import Link from 'next/link'
 import { ArrowRight, BriefcaseBusiness, GraduationCap, MapPinned, ShieldCheck } from 'lucide-react'
 
@@ -35,7 +36,7 @@ export default function PersonalPage() {
         <div className="page-container">
           <p className="eyebrow-light">Personal</p>
           <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-tight sm:text-7xl">
-            A better place to live, without carrying every cost alone.
+            <SplitText text="A better place to live, without carrying every cost alone." />
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
             Browse verified homes, register interest and complete your application online from

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SplitText } from '@/components/split-text'
 import Link from 'next/link'
 import { ArrowRight, Building2, GraduationCap, Handshake, Hotel, UsersRound } from 'lucide-react'
 
@@ -15,7 +16,7 @@ export default function CorporatePage() {
         <div className="page-container">
           <p className="eyebrow-light">Corporate</p>
           <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-tight sm:text-7xl">
-            One organised route for teams, talent and institutions.
+            <SplitText text="One organised route for teams, talent and institutions." />
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
             Coordinate employee accommodation, graduate placements, funded students and project

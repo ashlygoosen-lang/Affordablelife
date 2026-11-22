@@ -30,8 +30,9 @@ export function ProgressBar({
       <div className="flex gap-1">
         {Array.from({ length: rooms }).map((_, index) => (
           <span
-            className={`h-2 flex-1 rounded-full ${index < filled ? 'bg-[#2E6F5E]' : 'bg-[#DFE7E5]'}`}
+            className={`pb-seg h-2 flex-1 rounded-full ${index < filled ? 'is-filled bg-[#2E6F5E]' : 'bg-[#DFE7E5]'}`}
             key={index}
+            style={{ ['--s' as string]: index }}
           />
         ))}
       </div>
@@ -48,7 +49,7 @@ export function ListingCard({
 }) {
   const total = home.roomPrice + home.includedCosts
   return (
-    <article className="group overflow-hidden rounded-[24px] border border-[#E6E9E6] bg-white transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(14,42,59,.35)]">
+    <article className="listing-card group overflow-hidden rounded-[24px] border border-[#E6E9E6] bg-white transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(14,42,59,.35)]">
       <Link className="relative block aspect-[4/3] overflow-hidden" href={`/homes/${home.slug}`}>
         <Image
           className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]"

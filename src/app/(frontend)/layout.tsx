@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import React from 'react'
 import { Footer, Header, MobileTabs } from '@/components/site-chrome'
+import { Motion } from '@/components/motion'
 import { fraunces, inter } from './fonts'
 import './styles.css'
 
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
+        <Motion />
         <Header />
         <main id="main-content" tabIndex={-1}>
           {children}

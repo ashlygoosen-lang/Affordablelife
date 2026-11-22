@@ -16,6 +16,7 @@ import {
 import { CostCalculator, SuburbQuiz } from '@/components/discovery-tools'
 import { ListingCard, ProgressBar, formatRand } from '@/components/listing-card'
 import { getVerifiedHomes } from '@/lib/listings'
+import { SplitText } from '@/components/split-text'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,7 @@ export default async function HomePage() {
   )[0]
   return (
     <>
-      <section className="relative overflow-hidden bg-[#0E2A3B] text-white">
+      <section className="al-hero relative overflow-hidden bg-[#0E2A3B] text-white">
         {hero && (
           <Image
             src={hero.image.url}
@@ -36,22 +37,23 @@ export default async function HomePage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-45"
+            className="hero-photo object-cover object-center opacity-45"
           />
         )}
         <div className="absolute inset-0 bg-[linear-gradient(100deg,#0A2230_0%,rgba(10,34,48,.92)_38%,rgba(10,34,48,.55)_70%,rgba(10,34,48,.35)_100%)]" />
+        <div className="hero-light" aria-hidden="true" />
         <div className="page-container relative grid min-h-[760px] items-center gap-12 pb-32 pt-16 lg:grid-cols-[1.15fr_.85fr]">
-          <div>
-            <p className="text-[15px] text-[#E4C27E]">Shared homes and offices in South Africa</p>
+          <div className="hero-copy">
+            <p className="hero-eyebrow text-[15px] text-[#E4C27E]">Shared homes and offices in South Africa</p>
             <h1 className="mt-5 max-w-[13ch] font-serif text-[clamp(3.1rem,6.6vw,5.6rem)] font-light leading-[0.98] tracking-[-0.045em]">
-              The right space, with every cost on the table.
+              <SplitText text="The right space, with every cost on the table." />
             </h1>
-            <p className="mt-7 max-w-[46ch] text-lg leading-8 text-white/72">
+            <p className="hero-sub mt-7 max-w-[46ch] text-lg leading-8 text-white/72">
               Rent a room in a verified home, take a private office, or place a whole team. You see
               the full monthly price before you commit, and nothing is charged until your group is
               confirmed.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="hero-actions mt-9 flex flex-wrap gap-3">
               <Link className="primary-button" href="/homes">
                 Browse homes <ArrowRight size={18} />
               </Link>
@@ -59,7 +61,7 @@ export default async function HomePage() {
                 Register interest
               </Link>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/70">
+            <div className="hero-trust mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/70">
               <span className="flex items-center gap-2">
                 <ShieldCheck size={17} className="text-[#E4C27E]" /> Landlord, address and photos checked
               </span>
@@ -72,7 +74,7 @@ export default async function HomePage() {
           {hero && (
             <aside
               aria-label={`Monthly cost for ${hero.title}`}
-              className="relative justify-self-end rounded-[28px] bg-[#FAF9F6] p-7 text-[#14202B] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)] sm:w-[400px]"
+              className="receipt-card relative justify-self-end rounded-[28px] bg-[#FAF9F6] p-7 text-[#14202B] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)] sm:w-[400px]"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -91,11 +93,11 @@ export default async function HomePage() {
                 )}
               </div>
               <dl className="mt-6 border-t border-dashed border-[#CFD6D3] pt-4 text-[15px]">
-                <div className="receipt-line flex justify-between py-2" style={{ animationDelay: '150ms' }}>
+                <div className="receipt-line flex justify-between py-2" style={{ animationDelay: '750ms' }}>
                   <dt className="text-[#4A5961]">Room rent</dt>
                   <dd className="tabular-nums">{formatRand(hero.roomPrice)}</dd>
                 </div>
-                <div className="receipt-line flex justify-between py-2" style={{ animationDelay: '300ms' }}>
+                <div className="receipt-line flex justify-between py-2" style={{ animationDelay: '880ms' }}>
                   <dt className="text-[#4A5961]">
                     Included costs
                     <span className="mt-0.5 block max-w-[220px] text-xs text-[#8A9499]">
@@ -106,15 +108,15 @@ export default async function HomePage() {
                 </div>
                 <div
                   className="receipt-line mt-3 flex items-end justify-between border-t border-[#0E2A3B] pt-4"
-                  style={{ animationDelay: '480ms' }}
+                  style={{ animationDelay: '1020ms' }}
                 >
                   <dt className="text-sm text-[#5F6D74]">Total per month</dt>
-                  <dd className="font-serif text-[2.6rem] font-normal leading-none tabular-nums tracking-[-0.035em] text-[#0E2A3B]">
+                  <dd data-count data-count-delay="1000" className="font-serif text-[2.6rem] font-normal leading-none tabular-nums tracking-[-0.035em] text-[#0E2A3B]">
                     {formatRand(hero.roomPrice + hero.includedCosts)}
                   </dd>
                 </div>
               </dl>
-              <div className="receipt-line mt-6 rounded-2xl bg-[#F1EEE7] p-4" style={{ animationDelay: '640ms' }}>
+              <div className="receipt-line mt-6 rounded-2xl bg-[#F1EEE7] p-4" style={{ animationDelay: '1160ms' }}>
                 <ProgressBar filled={hero.interested} rooms={hero.rooms} status={hero.groupStatus} />
               </div>
               <Link
@@ -131,7 +133,7 @@ export default async function HomePage() {
       <section className="-mt-16 relative z-10">
         <form
           action="/homes"
-          className="page-container grid gap-2 rounded-[20px] bg-white p-3 shadow-[0_24px_60px_rgba(14,42,59,.2)] md:grid-cols-[1.3fr_1fr_1fr_auto]"
+          className="hero-search page-container grid gap-2 rounded-[20px] bg-white p-3 shadow-[0_24px_60px_rgba(14,42,59,.2)] md:grid-cols-[1.3fr_1fr_1fr_auto]"
         >
           <label className="search-field">
             Where

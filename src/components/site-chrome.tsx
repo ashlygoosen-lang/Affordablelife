@@ -76,7 +76,7 @@ export function Header() {
   }, [dark])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#0E2A3B]/10 bg-white/95 backdrop-blur-xl">
+    <header className="al-header sticky top-0 z-50 border-b border-[#0E2A3B]/10 bg-white/95 backdrop-blur-xl">
       <div className="mx-auto flex h-[76px] w-[min(1200px,calc(100%-32px))] items-center gap-6">
         <Logo />
         <nav className="ml-6 hidden items-center gap-7 lg:flex" aria-label="Main navigation">
@@ -99,7 +99,7 @@ export function Header() {
               Explore <ChevronDown aria-hidden="true" size={14} />
             </button>
             {tools && (
-              <div className="absolute left-1/2 top-12 w-[420px] -translate-x-1/2 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
+              <div className="al-dropdown absolute left-1/2 top-12 w-[420px] -translate-x-1/2 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
                 <div className="grid grid-cols-2 gap-1">
                   {exploreNav.map(([label, href]) => (
                     <Link
@@ -160,7 +160,7 @@ export function Header() {
         </button>
       </div>
       {open && (
-        <nav className="border-t bg-white px-5 py-4 lg:hidden" aria-label="Mobile navigation">
+        <nav className="al-mobile-nav border-t bg-white px-5 py-4 lg:hidden" aria-label="Mobile navigation">
           {primaryNav.map(([label, href]) => (
             <Link
               className="flex min-h-12 items-center border-b border-black/5 text-lg font-semibold"

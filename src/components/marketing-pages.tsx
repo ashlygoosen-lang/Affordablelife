@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { CostCalculator, SuburbQuiz } from './discovery-tools'
 import { PropertyForm } from './property-form'
+import { SplitText } from './split-text'
 
 export function PageHero({
   eyebrow,
@@ -27,11 +28,13 @@ export function PageHero({
   action?: { label: string; href: string }
 }) {
   return (
-    <section className="bg-[#F6F1E9] py-24">
+    <section className="page-hero bg-[#F6F1E9] py-24">
       <div className="page-container">
         <p className="eyebrow">{eyebrow}</p>
-        <h1 className="display-title max-w-4xl">{title}</h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-[#5C696F]">{text}</p>
+        <h1 className="display-title max-w-4xl">
+          <SplitText text={title} />
+        </h1>
+        <p className="page-hero-text mt-6 max-w-2xl text-lg leading-8 text-[#5C696F]">{text}</p>
         {action && (
           <Link className="primary-button mt-8" href={action.href}>
             {action.label}
